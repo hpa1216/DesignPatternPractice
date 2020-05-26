@@ -3,6 +3,11 @@ package CommandPattern;
 import CommandPattern.Command.Command;
 import CommandPattern.Command.NoCommand;
 
+/*
+ * 根據SimpleRemoteControl的概念實作RemoteControl，
+ * 且一次可記憶多個Command，此範例設定為最多4個，
+ * 實作了按下各種按鍵時所對應的undo指令
+ */
 public class RemoteControl {
     Command[] onCommands;
     Command[] offCommands;

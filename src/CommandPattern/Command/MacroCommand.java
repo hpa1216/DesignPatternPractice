@@ -1,5 +1,8 @@
 package CommandPattern.Command;
 
+/*
+ * 巨集指令，將多個指令順序儲存後，每次使用execute()就會依序執行所儲存的指令
+ */
 public class MacroCommand implements Command {
     Command[] commands;
     public MacroCommand(Command[] commands) {

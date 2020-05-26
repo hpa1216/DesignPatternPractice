@@ -15,3 +15,8 @@ public class SimpleRemoteControl {
         slot.execute();
     }
 }
+
+/*
+ * 實作一個可以輸入各種家電開關指令的控制器
+ * Command 的實現交由該電器的開發者提供
+ */

@@ -1,4 +1,4 @@
-import AdapterPattern.*;
+import AdapterPattern.ObjectAdapter.*;
 import CommandPattern.*;
 import CommandPattern.Command.*;
 import DecoratePattern.decorateOrder.Meal.*;
@@ -8,6 +8,7 @@ import DecoratePattern.decorateOrder.Order.Order;
 import FacadePattern.*;
 import FactoryPattern.FactoryMethod.NYPizzaStore;
 import FactoryPattern.FactoryMethod.PizzaStore;
+import FactoryPattern.Pizza.Pizza;
 import FactoryPattern.Pizza.PizzaType;
 import FactoryPattern.SimpleFactory.ChicagoPizzaFactory;
 import FactoryPattern.SimpleFactory.SimplePizzaFactory;
@@ -29,7 +30,8 @@ import java.util.Observer;
 
 public class Test {
     public static void main(String args[]) throws Exception {
-        singletonTest();
+        factoryTest();
+
     }
 
     //策略模式範例
@@ -107,16 +109,26 @@ public class Test {
 
     //工廠模式範例
     private static void factoryTest(){
-        //簡單工廠
+        //建立簡單工廠
         SimplePizzaFactory simplePizzaFactory = new ChicagoPizzaFactory();
+        Pizza pizza = simplePizzaFactory.createPizza(PizzaType.Barbecue);
+        System.out.println();
+        /*
+         * 簡單工廠改寫後，使用者能夠從PizzaStore指定不同的PizzaFactory
+         * 藉由替換不同的PizzaFactory可得到同樣口味但是不同風格的Pizza
+         */
+        simplePizzaFactory = new ChicagoPizzaFactory();
         SimplePizzaStore simplePizzaStore = new SimplePizzaStore(simplePizzaFactory);
         simplePizzaStore.orderPizza(PizzaType.Barbecue);
         System.out.println();
-        //工廠方法
+        //重構成工廠方法
         PizzaStore pizzaStore = new NYPizzaStore();
         pizzaStore.orderPizza(PizzaType.Hawaii);
         System.out.println();
-        //抽象工廠
+        /*
+         * 工廠方法改寫為抽象工廠後，對使用者來說使用的方式沒變，
+         * 但是對開發者來說，增加了工廠提供實例時可隨時替換實作細節的方法。
+         */
         FactoryPattern.AbstractFactory.PizzaStore.PizzaStore abstractPizzaStore
                 = new FactoryPattern.AbstractFactory.PizzaStore.ChicagoPizzaStore();
         abstractPizzaStore.orderPizza(PizzaType.Hawaii);
@@ -145,9 +157,9 @@ public class Test {
     private static void commandTest(){
         //簡易遙控器一次只能記憶一種功能，寫入新功能後就無法使用上一個功能
         SimpleRemoteControl simpleRemoteControl = new SimpleRemoteControl();
-        TV tv = new TV();
         //將這台TV的開關功能寫入簡易遙控器
-        simpleRemoteControl.setCommand(tv::on);
+        TV tv = new TV();
+        simpleRemoteControl.setCommand(tv::on);//這段可以思考一下為何這樣寫一樣能執行
         simpleRemoteControl.buttonWasPressed();
         simpleRemoteControl.setCommand(tv::off);
         simpleRemoteControl.buttonWasPressed();
@@ -157,7 +169,8 @@ public class Test {
         simpleRemoteControl.setCommand(tvOn);
         simpleRemoteControl.buttonWasPressed();
         System.out.println();
-        //將各種指令輸入到萬用遙控器
+
+        //將各種指令輸入到萬用遙控器並測試
         RemoteControl remoteControl = new RemoteControl();
         Light myLight = new Light("living room's light");
         AirCon myAirCon = new AirCon("living room's airCon");
@@ -179,7 +192,7 @@ public class Test {
         remoteControl.offButtonWasPushed(1);
         remoteControl.offButtonWasPushed(2);
         System.out.println();
-        //加入指令巨集
+        //使用指令巨集來完成一連串的指令
         Command[] commandsOn = {lightOnCommand, airConOnCommand, tvOnCommand};
         Command[] commandsOff = {tvOffCommand, airConOffCommand, lightOffCommand};
         MacroCommand macroOn = new MacroCommand(commandsOn);
@@ -191,12 +204,17 @@ public class Test {
 
     //轉接器模式
     private static void adapterTest(){
+        //ObjectAdapter
         Bicycle bicycle = new OldBicycle();
         Motorcycle motorcycle = new Honda();
         Motorcycle bike = new MotorcycleAdapter(bicycle);
-
+        //將Bicycle轉接為Motorcycle變成同樣類別後就可以使用forEach
         List<Motorcycle> motorcycles = Arrays.asList(motorcycle, bike);
         motorcycles.forEach(Test::testMotorcycle);
+
+        //ClassAdapter
+        AdapterPattern.ClassAdapter.Bicycle newBicycle = new AdapterPattern.ClassAdapter.MotorcycleAdapter();
+        AdapterPattern.ClassAdapter.Motorcycle newMotorcycle = (AdapterPattern.ClassAdapter.MotorcycleAdapter)newBicycle;
     }
 
     private static void testMotorcycle(Motorcycle motorcycle){
