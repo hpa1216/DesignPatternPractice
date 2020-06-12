@@ -1,6 +1,8 @@
 import AdapterPattern.ObjectAdapter.*;
 import CommandPattern.*;
 import CommandPattern.Command.*;
+import CompositeTest.Frame;
+import CompositeTest.Playlist;
 import DecoratePattern.decorateOrder.Meal.*;
 import DecoratePattern.decorateOrder.Order.ChildSet;
 import DecoratePattern.decorateOrder.Order.FullSet;
@@ -13,8 +15,15 @@ import FactoryPattern.Pizza.PizzaType;
 import FactoryPattern.SimpleFactory.ChicagoPizzaFactory;
 import FactoryPattern.SimpleFactory.SimplePizzaFactory;
 import FactoryPattern.SimpleFactory.SimplePizzaStore;
+import IteratorPattern.MyIterator;
+import IteratorPattern.StoreA;
+import IteratorPattern.StoreB;
+import IteratorPattern.StoreC;
 import ObserverPattern.*;
+import ProxyPattern.NewsReader;
+import ProxyPattern.NewsReaderFix;
 import SingletonPattern.SingletonExample5;
+import StatePattern.StatePatternTrafficLight.TrafficLightDriver;
 import StrategyPattern.OnlineCalculator;
 import StrategyPattern.Strategy.*;
 import TemplateMethodPattern.CaffeineBeverage;
@@ -30,8 +39,7 @@ import java.util.Observer;
 
 public class Test {
     public static void main(String args[]) throws Exception {
-        factoryTest();
-
+        commandTest();
     }
 
     //策略模式範例
@@ -204,11 +212,18 @@ public class Test {
 
     //轉接器模式
     private static void adapterTest(){
+        /*
+         * 轉接方式可分為物件轉接和類別轉接，
+         * 可根據實際需求不同來建立不同的轉接器。
+         *
+         * 以下程式碼可以試著想像一下如何反推出MotorcycleAdapter和其他Class間的關係
+         */
+
         //ObjectAdapter
         Bicycle bicycle = new OldBicycle();
         Motorcycle motorcycle = new Honda();
         Motorcycle bike = new MotorcycleAdapter(bicycle);
-        //將Bicycle轉接為Motorcycle變成同樣類別後就可以使用forEach
+        //將Bicycle轉接為Motorcycle後就可以使用forEach
         List<Motorcycle> motorcycles = Arrays.asList(motorcycle, bike);
         motorcycles.forEach(Test::testMotorcycle);
 
@@ -256,22 +271,81 @@ public class Test {
 
     //反覆器(迭代器)模式
     private static void iteratorTest(){
-
+        MyIterator.foreach(new StoreA().getMenu());
+        MyIterator.foreach(new StoreB().getMenu());
+        MyIterator.foreach(new StoreC().getMenu());
     }
 
     //合成模式
     private static void compositeTest(){
-
+        //合成模式讓我們將物件合成樹狀結構 呈現 部分-整體 的關係 讓外界可以以一致的方式處理這個個別物件或合成物件
+        //多個Frame可以組合成一個連續影像，多個連續影像也可以再組合成時間更長的影片
+        //開場畫面
+        Frame logo = new Frame("片頭 LOGO");
+        //第一場景
+        Playlist playlist1 = new Playlist();
+        playlist1.add(new Frame("Duke 左揮手"));
+        playlist1.add(new Frame("Duke 右揮手"));
+        //第二場景
+        Playlist playlist2 = new Playlist();
+        playlist2.add(new Frame("Duke 走左腳"));
+        playlist2.add(new Frame("Duke 走右腳"));
+        //剪輯
+        Playlist all = new Playlist();
+        all.add(logo);
+        all.add(playlist1);
+        all.add(playlist2);
+        //播放
+        all.play();
     }
 
     //狀態模式
     private static void stateTest(){
-
+        TrafficLightDriver trafficLightDriver = new TrafficLightDriver();
+        try {
+            trafficLightDriver.start();
+            Thread.sleep(10000);
+            trafficLightDriver.stop();
+            trafficLightDriver.start();
+            Thread.sleep(10000);
+            trafficLightDriver.stop();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 
     //代理人模式
     private static void proxyTest(){
+        /*
+         * 當無法直接訪問某個對象或是其他理由導致訪問這個對象很困難的時候，就可以用一個代理對象來做間接的訪問
+         * 很困難的理由包含物件在遠端，或是建立成本高，或是需要安全控管等等
+         *
+         * 主要應用為以下幾種
+         * 遠端代理：為一個遠端的物件提供一個在本地的替身，遠端可以是不同台電腦或是不同個JVM，
+         *         使用者可藉由替身物件來使用遠端物件
+         * 虛擬代理：如果需要創建的物件需要花費很多資源，可以先創一個花費少資源的先頂一下，
+         *         真實對象只有在需要的時候才創建
+         * 安全代理：控制對一個對象的訪問，可以給不同用戶不同的使用權限
+         *
+         * 因proxy使用方式和類型很多，且不是每種都適合用簡單的程式碼實現，
+         * 所以這邊只提供一個虛擬代理的實作概念
+         *
+         */
 
+        //第一代新聞閱讀器開啟時就會下載所有的文字圖片影片，造成開啟時間過長，使用體驗較差
+        NewsReader newsReader = new NewsReader();
+        newsReader.start();
+        newsReader.scroll();
+        newsReader.playVideo();
+
+        System.out.println();
+
+        //改進後，開啟時只下載文字，圖片用預設的圖替代，當使用者看的那一頁出現圖片時才會真的下載圖片
+        //影片改用預覽圖片代替，當使用者點擊播放鍵才會真的下載影片播放
+        NewsReaderFix newsReaderFix = new NewsReaderFix();
+        newsReaderFix.start();
+        newsReaderFix.scroll();
+        newsReaderFix.playVideo();
     }
 
 }

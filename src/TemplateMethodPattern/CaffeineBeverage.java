@@ -1,5 +1,11 @@
 package TemplateMethodPattern;
 
+/*
+ * 定義一個樣板提供子類別繼承，
+ * 並且將已固定的流程寫成final function，讓子類別無法Override
+ * 這樣做的好處是可以統一所有子類別的操作，
+ * 需要客製化的部分則交由子類別自行實現abstract function
+ */
 public abstract class CaffeineBeverage {
     protected String soakObject;
 
