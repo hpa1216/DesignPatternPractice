@@ -14,7 +14,7 @@ public interface IObservableLambda {
         players.remove(observer);
     }
 
-    default void nofityAllObserver() {
+    default void notifyAllObserver() {
         for (IObserver player: players) {
             player.update();
         }

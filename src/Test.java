@@ -39,7 +39,7 @@ import java.util.Observer;
 
 public class Test {
     public static void main(String args[]) throws Exception {
-        commandTest();
+        stateTest();
     }
 
     //策略模式範例
@@ -95,7 +95,7 @@ public class Test {
         IObservableLambda observableLambda = new IObservableLambda() {};
         observableLambda.add(() -> System.out.println("資訊已更新，請至官網查閱"));
         observableLambda.add(() -> System.out.println("租用期已到，請至門市續約"));
-        observableLambda.nofityAllObserver();
+        observableLambda.notifyAllObserver();
     }
 
     //裝飾者模式範例
